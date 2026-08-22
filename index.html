@@ -5,34 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TryThis</title>
     <style>
-        :root[data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #fff; --accent: #4fa3d1; }
-        :root[data-theme="light"] { --bg: #f5f5f5; --card: #fff; --text: #000; --accent: #007acc; }
-        body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; padding: 20px; transition: 0.3s; margin: 0; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; }
-        .card { background: var(--card); padding: 15px; border-radius: 10px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        button { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .profile { display: flex; align-items: center; gap: 10px; }
-        .badge { background: #22c55e; color: black; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        :root[data-theme="dark"] { --bg: #18191a; --card: #242526; --text: #e4e6eb; --input: #3a3b3c; --accent: #2d88ff; }
+        :root[data-theme="light"] { --bg: #f0f2f5; --card: #ffffff; --text: #050505; --input: #e4e6eb; --accent: #1877f2; }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.2s; }
+        
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--card); border-bottom: 1px solid var(--input); position: sticky; top:0; z-index: 10; }
+        .nav-btns button { background: var(--input); color: var(--text); border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; margin-left: 5px; }
+
+        .container { max-width: 600px; margin: 20px auto; padding: 0 10px; }
+
+        /* Profile Header */
+        .profile-card { background: var(--card); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+        .cover { height: 120px; background: linear-gradient(45deg, #1877f2, #00d2ff); }
+        .profile-info { padding: 15px; position: relative; text-align: center; }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; background: #666; border: 4px solid var(--card); margin: -50px auto 10px auto; display: block; }
+        .badge { background: #22c55e; color: #000; font-size: 11px; padding: 2px 8px; border-radius: 10px; vertical-align: middle; }
+
+        /* Create Post */
+        .create-post { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        textarea { width: 100%; background: var(--input); color: var(--text); border: none; padding: 10px; border-radius: 8px; resize: none; margin-bottom: 10px; }
+        .post-btn { background: var(--accent); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        /* Feed & Chat */
+        .post { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        .chat-box { background: var(--card); padding: 15px; border-radius: 10px; height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+        .msg { background: var(--input); padding: 8px 12px; border-radius: 15px; width: fit-content; max-width: 80%; }
     </style>
 </head>
 <body>
-    <div class="header">
+
+    <div class="navbar">
         <h2>TryThis</h2>
-        <button onclick="toggleTheme()">☀️ / 🌙</button>
+        <div class="nav-btns">
+            <button onclick="toggleTheme()">☀️ / 🌙</button>
+            <button onclick="toggleLang()">🌐 <span id="lang-label">EN</span></button>
+            <button onclick="alert('لا توجد إشعارات جديدة')">🔔</button>
+        </div>
     </div>
 
-    <div class="card">
-        <div class="profile">
-            <h3>المسؤول: shlal</h3>
-            <span class="badge">Admin</span>
+    <div class="container">
+        <!-- البروفايل الشخصي -->
+        <div class="profile-card">
+            <div class="cover"></div>
+            <div class="profile-info">
+                <div class="avatar"></div>
+                <h2>shlal <span class="badge">المسؤول</span></h2>
+                <p style="font-size: 13px; color: gray;">🇮🇶 العراق | حساب مسؤول المنصة</p>
+                <p style="margin-top: 5px;">مرحباً بكم في منصتي الخاصة TryThis!</p>
+            </div>
         </div>
-        <p>مرحباً بك في المنصة الخاصة بك! الموقع قيد التشغيل الآن.</p>
+
+        <!-- كتابة منشور -->
+        <div class="create-post">
+            <textarea id="postInput" rows="2" placeholder="بماذا تفكر يا shlal؟"></textarea>
+            <button class="post-btn" onclick="addPost()">نشر</button>
+        </div>
+
+        <!-- خلاصة المنشورات -->
+        <div id="feed">
+            <div class="post">
+                <b>shlal</b> <span style="font-size: 11px; color: gray;">• الآن</span>
+                <p style="margin-top: 8px;">تم إطلاق موقع TryThis بنجاح! تحكم كامل متاح الآن.</p>
+            </div>
+        </div>
+
+        <!-- الشات الموحد للجميع -->
+        <h3>المحادثة الجماعية</h3>
+        <div class="chat-box" id="chat">
+            <div class="msg"><b>النظام:</b> أهلاً بك في المجموعة العامة الخاصة بالموقع!</div>
+        </div>
     </div>
 
     <script>
         function toggleTheme() {
             let current = document.documentElement.getAttribute('data-theme');
             document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        }
+
+        function toggleLang() {
+            let html = document.documentElement;
+            let isAr = html.getAttribute('dir') === 'rtl';
+            html.setAttribute('dir', isAr ? 'ltr' : 'rtl');
+            document.getElementById('lang-label').innerText = isAr ? 'AR' : 'EN';
+        }
+
+        function addPost() {
+            let text = document.getElementById('postInput').value;
+            if(!text) return;
+            let feed = document.getElementById('feed');
+            let newPost = document.createElement('div');
+            newPost.className = 'post';
+            newPost.innerHTML = `<b>shlal</b> <span style="font-size: 11px; color: gray;">• الآن</span><p style="margin-top: 8px;">${text}</p>`;
+            feed.prepend(newPost);
+            document.getElementById('postInput').value = '';
         }
     </script>
 </body>
